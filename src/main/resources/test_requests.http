@@ -1,0 +1,336 @@
+### API Test Cases for All Controllers ###
+###   WITHOUT FIREBASE AUTHENTICATION  ###
+
+### Variables
+@baseUrl = http://localhost:8080/api
+@usersUrl = {{baseUrl}}/users
+@homesUrl = {{baseUrl}}/homes
+@depotsUrl = {{baseUrl}}/depots
+@groceryItemsUrl = {{baseUrl}}/grocery-items
+@storedItemsUrl = {{baseUrl}}/stored-items
+@groceryListsUrl = {{baseUrl}}/grocery-lists
+@groceryListItemsUrl = {{baseUrl}}/grocery-list-items
+
+### User Tests ###
+
+# Create first user (will be owner)
+# @name createOwner
+POST {{usersUrl}}
+Content-Type: application/json
+
+{
+  "email": "owner@example.com",
+  "name": "Home Owner"
+}
+
+###
+@ownerId = {{createOwner.response.body.id}}
+
+# Create second user (will be member)
+# @name createMember
+POST {{usersUrl}}
+Content-Type: application/json
+
+{
+  "email": "member@example.com",
+  "name": "Home Member"
+}
+
+###
+@memberId = {{createMember.response.body.id}}
+
+##### Get all users
+GET {{usersUrl}}
+
+
+##### Get specific user
+GET {{usersUrl}}/{{ownerId}}
+
+
+### Update user
+PUT {{usersUrl}}/{{ownerId}}
+Content-Type: application/json
+
+{
+  "email": "owner.updated@example.com",
+  "name": "Updated Owner Name",
+  "photoUrl": "https://example.com/owner-updated.jpg"
+}
+
+### Home Tests ###
+
+### Create home
+# @name createHome
+POST {{homesUrl}}
+Content-Type: application/json
+
+{
+  "name": "My First Home",
+  "description": "Main residence",
+  "ownerId": {{ownerId}},
+  "memberIds": [{{memberId}}]
+}
+
+###
+@homeId = {{createHome.response.body.id}}
+
+### Get all homes
+GET {{homesUrl}}
+
+### Get specific home
+GET {{homesUrl}}/{{homeId}}
+
+### Get homes by owner
+GET {{homesUrl}}/owner/{{ownerId}}
+
+### Get homes by member
+GET {{homesUrl}}/member/{{memberId}}
+
+### Update home
+PUT {{homesUrl}}/{{homeId}}
+Content-Type: application/json
+
+{
+  "name": "Updated Home Name",
+  "description": "Updated description",
+  "ownerId": {{ownerId}},
+  "memberIds": [{{memberId}}]
+}
+
+### Depot Tests ###
+
+### Create depot
+# @name createDepot
+POST {{depotsUrl}}
+Content-Type: application/json
+
+{
+  "name": "Kitchen Pantry",
+  "description": "Main food storage",
+  "homeId": {{homeId}}
+}
+
+###
+@depotId = {{createDepot.response.body.id}}
+
+### Get all depots
+GET {{depotsUrl}}
+
+### Get specific depot
+GET {{depotsUrl}}/{{depotId}}
+
+### Get depots by home
+GET {{depotsUrl}}/home/{{homeId}}
+
+### Search depots in home
+GET {{depotsUrl}}/home/{{homeId}}/search?name=pantry
+
+### Update depot
+PUT {{depotsUrl}}/{{depotId}}
+Content-Type: application/json
+
+{
+  "name": "Updated Pantry",
+  "description": "Updated food storage",
+  "homeId": {{homeId}}
+}
+
+### GroceryItem Tests ###
+
+### Create grocery item
+# @name createGroceryItem
+POST {{groceryItemsUrl}}
+Content-Type: application/json
+
+{
+  "name": "Milk",
+  "description": "Whole milk",
+  "barcode": "123456789",
+  "category": "DAIRY",
+  "defaultUnit": "LITER"
+}
+
+###
+@groceryItemId = {{createGroceryItem.response.body.id}}
+
+### Get all grocery items
+GET {{groceryItemsUrl}}
+
+### Get specific grocery item
+GET {{groceryItemsUrl}}/{{groceryItemId}}
+
+### Get item by barcode
+GET {{groceryItemsUrl}}/barcode/123456789
+
+### Get items by category
+GET {{groceryItemsUrl}}/category/DAIRY
+
+### Search items
+GET {{groceryItemsUrl}}/search?name=milk
+
+### Update grocery item
+PUT {{groceryItemsUrl}}/{{groceryItemId}}
+Content-Type: application/json
+
+{
+  "name": "Updated Milk",
+  "description": "Low fat milk",
+  "barcode": "123456789",
+  "category": "DAIRY",
+  "defaultUnit": "LITER"
+}
+
+### StoredItem Tests ###
+
+### Create stored item
+# @name createStoredItem
+POST {{storedItemsUrl}}
+Content-Type: application/json
+
+{
+  "groceryItemId": {{groceryItemId}},
+  "groceryItemName": "Milk",
+  "depotId": {{depotId}},
+  "quantity": 2.0,
+  "unit": "LITER",
+  "expirationDate": "2024-12-31T00:00:00"
+}
+
+###
+@storedItemId = {{createStoredItem.response.body.id}}
+
+### Get specific stored item
+GET {{storedItemsUrl}}/{{storedItemId}}
+
+### Get items by depot
+GET {{storedItemsUrl}}/depot/{{depotId}}
+
+### Get expiring items
+GET {{storedItemsUrl}}/expiring?beforeDate=2024-12-31T00:00:00
+
+### Get expiring items by depot
+GET {{storedItemsUrl}}/depot/{{depotId}}/expiring?beforeDate=2024-12-31T00:00:00
+
+### Update stored item
+PUT {{storedItemsUrl}}/{{storedItemId}}
+Content-Type: application/json
+
+{
+  "quantity": 3.0,
+  "unit": "LITER",
+  "expirationDate": "2024-12-31T00:00:00"
+}
+
+### Adjust quantity
+PATCH {{storedItemsUrl}}/{{storedItemId}}/quantity?quantityChange=-0.5
+
+##### GroceryList Tests ###
+
+### Create grocery list
+# @name createGroceryList
+POST {{groceryListsUrl}}
+Content-Type: application/json
+
+{
+  "name": "Weekly Shopping",
+  "description": "Shopping for this week",
+  "ownerId": {{ownerId}},
+  "memberIds": [{{memberId}}]
+}
+
+###
+@groceryListId = {{createGroceryList.response.body.id}}
+
+### Get specific grocery list
+GET {{groceryListsUrl}}/{{groceryListId}}
+
+### Get lists by user
+GET {{groceryListsUrl}}/user/{{ownerId}}
+
+### Update grocery list
+PUT {{groceryListsUrl}}/{{groceryListId}}
+Content-Type: application/json
+
+{
+  "name": "Updated Shopping List",
+  "description": "Updated shopping list",
+  "ownerId": {{ownerId}},
+  "memberIds": [{{memberId}}]
+}
+
+### Add member to list
+POST {{groceryListsUrl}}/{{groceryListId}}/members/{{memberId}}
+
+### Remove member from list
+DELETE {{groceryListsUrl}}/{{groceryListId}}/members/{{memberId}}
+
+### GroceryListItem Tests ###
+
+### Create grocery list item
+# @name createGroceryListItem
+POST {{groceryListItemsUrl}}
+Content-Type: application/json
+
+{
+  "groceryListId": {{groceryListId}},
+  "groceryItemId": {{groceryItemId}},
+  "quantity": 2.0,
+  "unit": "LITER",
+  "notes": "Get the fresh one",
+  "status": "PENDING"
+}
+
+###
+@groceryListItemId = {{createGroceryListItem.response.body.id}}
+
+### Get specific grocery list item
+GET {{groceryListItemsUrl}}/{{groceryListItemId}}
+
+### Get items by list
+GET {{groceryListItemsUrl}}/list/{{groceryListId}}
+
+### Get items by list and status
+GET {{groceryListItemsUrl}}/list/{{groceryListId}}/status/PENDING
+
+### Update grocery list item
+PUT {{groceryListItemsUrl}}/{{groceryListItemId}}
+Content-Type: application/json
+
+{
+  "groceryListId": {{groceryListId}},
+  "groceryItemId": {{groceryItemId}},
+  "quantity": 3.0,
+  "unit": "LITER",
+  "notes": "Updated notes",
+  "status": "PURCHASED"
+}
+
+### Update item status
+PATCH {{groceryListItemsUrl}}/{{groceryListItemId}}/status
+Content-Type: application/json
+
+"PURCHASED"
+
+### Cleanup Tests ###
+
+### Delete grocery list item
+DELETE {{groceryListItemsUrl}}/{{groceryListItemId}}
+
+### Delete grocery list
+DELETE {{groceryListsUrl}}/{{groceryListId}}
+
+### Delete stored item
+DELETE {{storedItemsUrl}}/{{storedItemId}}
+
+### Delete grocery item
+DELETE {{groceryItemsUrl}}/{{groceryItemId}}
+
+### Delete depot
+DELETE {{depotsUrl}}/{{depotId}}
+
+### Delete home
+DELETE {{homesUrl}}/{{homeId}}
+
+### Delete users
+DELETE {{usersUrl}}/{{memberId}}
+DELETE {{usersUrl}}/{{ownerId}}
