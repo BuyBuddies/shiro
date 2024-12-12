@@ -10,6 +10,7 @@ public interface StoredItemRepository extends JpaRepository<StoredItem, Long> {
     List<StoredItem> findByDepotId(Long depotId);
     List<StoredItem> findByGroceryItemId(Long groceryItemId);
     List<StoredItem> findByDepotIdAndGroceryItemId(Long depotId, Long groceryItemId);
+    List<StoredItem> findByDepotIdAndGroceryItemNameIgnoreCase(Long depotId, String groceryItemName);
     List<StoredItem> findByExpirationDateBefore(LocalDateTime date);
     List<StoredItem> findByDepotIdAndExpirationDateBefore(Long depotId, LocalDateTime date);
 }

@@ -3,15 +3,12 @@ package com.buybuddies.shiro.service;
 import com.buybuddies.shiro.dto.GroceryItemDTO;
 import com.buybuddies.shiro.entity.GroceryItem;
 import com.buybuddies.shiro.enums.ItemCategory;
-import com.buybuddies.shiro.exception.ResourceNotFoundException;
 import com.buybuddies.shiro.repository.GroceryItemRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,7 +27,7 @@ public class GroceryItemService {
         item.setDescription(groceryItemDTO.getDescription());
         item.setBarcode(groceryItemDTO.getBarcode());
         item.setCategory(groceryItemDTO.getCategory());
-        item.setDefaultUnit(groceryItemDTO.getDefaultUnit());
+        item.setDefaultUnit(groceryItemDTO.getUnit());
 
         item = groceryItemRepository.save(item);
         return convertToDTO(item);
@@ -80,7 +77,7 @@ public class GroceryItemService {
         item.setDescription(dto.getDescription());
         item.setBarcode(dto.getBarcode());
         item.setCategory(dto.getCategory());
-        item.setDefaultUnit(dto.getDefaultUnit());
+        item.setDefaultUnit(dto.getUnit());
 
         item = groceryItemRepository.save(item);
         return convertToDTO(item);
@@ -101,7 +98,7 @@ public class GroceryItemService {
         dto.setDescription(item.getDescription());
         dto.setBarcode(item.getBarcode());
         dto.setCategory(item.getCategory());
-        dto.setDefaultUnit(item.getDefaultUnit());
+        dto.setUnit(item.getDefaultUnit());
         return dto;
     }
 }

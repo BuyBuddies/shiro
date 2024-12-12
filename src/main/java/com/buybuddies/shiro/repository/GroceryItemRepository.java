@@ -9,7 +9,10 @@ import java.util.Optional;
 
 public interface GroceryItemRepository extends JpaRepository<GroceryItem, Long> {
     List<GroceryItem> findByCategory(ItemCategory category);
-    List<GroceryItem> findByNameContainingIgnoreCase(String name);
+    Optional<GroceryItem> findByNameContainingIgnoreCase(String name);
+    Optional<GroceryItem> findByName(String name);
+    Optional<GroceryItem> findByNameIgnoreCase(String name);
+
     Optional<GroceryItem> findByBarcode(String barcode);
     boolean existsByBarcode(String barcode);
 }

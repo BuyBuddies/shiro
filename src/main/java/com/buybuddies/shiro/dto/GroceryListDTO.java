@@ -13,5 +13,5 @@ public class GroceryListDTO {
     private Long ownerId;
     private String ownerName;
     private Set<Long> memberIds = new HashSet<>();
-    private Set<String> memberNames = new HashSet<>();
+//    private Set<String> memberNames = new HashSet<>();
 }

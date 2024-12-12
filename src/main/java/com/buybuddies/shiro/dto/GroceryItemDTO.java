@@ -11,5 +11,5 @@ public class GroceryItemDTO {
     String description;
     String barcode;
     ItemCategory category;
-    MeasurementUnit defaultUnit;
+    MeasurementUnit unit;
 }

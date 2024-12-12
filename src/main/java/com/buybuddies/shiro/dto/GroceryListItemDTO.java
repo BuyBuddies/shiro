@@ -8,7 +8,7 @@ import lombok.Data;
 public class GroceryListItemDTO {
     private Long id;
     private Long groceryListId;
-    private Long groceryItemId;
+//    private Long groceryItemId;
     private String groceryItemName;
     private Double quantity;
     private MeasurementUnit unit;

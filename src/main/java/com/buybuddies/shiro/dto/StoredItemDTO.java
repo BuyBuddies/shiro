@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Data
 public class StoredItemDTO {
     private Long id;
-    private Long groceryItemId;
+//    private Long groceryItemId;
     private String groceryItemName;
     private Long depotId;
     private String depotName;

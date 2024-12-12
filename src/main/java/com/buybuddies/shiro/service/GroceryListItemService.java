@@ -30,7 +30,7 @@ public class GroceryListItemService {
         GroceryList groceryList = groceryListRepository.findById(dto.getGroceryListId())
                 .orElseThrow(() -> new RuntimeException("Grocery list not found"));
 
-        GroceryItem groceryItem = groceryItemRepository.findById(dto.getGroceryItemId())
+        GroceryItem groceryItem = groceryItemRepository.findByNameIgnoreCase(dto.getGroceryItemName())
                 .orElseGet(() -> {
                     GroceryItem newItem = new GroceryItem();
                     newItem.setName(dto.getGroceryItemName());
@@ -74,8 +74,8 @@ public class GroceryListItemService {
         GroceryListItem item = groceryListItemRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Grocery list item not found"));
 
-        if (dto.getGroceryItemId() != null && !dto.getGroceryItemId().equals(item.getGroceryItem().getId())) {
-            GroceryItem groceryItem = groceryItemRepository.findById(dto.getGroceryItemId())
+        if (dto.getGroceryItemName() != null && !dto.getGroceryItemName().equals(item.getGroceryItem().getName())) {
+            GroceryItem groceryItem = groceryItemRepository.findByNameIgnoreCase(dto.getGroceryItemName())
                     .orElseThrow(() -> new RuntimeException("Grocery item not found"));
             item.setGroceryItem(groceryItem);
         }
@@ -113,7 +113,7 @@ public class GroceryListItemService {
         GroceryListItemDTO dto = new GroceryListItemDTO();
         dto.setId(item.getId());
         dto.setGroceryListId(item.getGroceryList().getId());
-        dto.setGroceryItemId(item.getGroceryItem().getId());
+//        dto.setGroceryItemId(item.getGroceryItem().getId());
         dto.setGroceryItemName(item.getGroceryItem().getName());
         dto.setQuantity(item.getQuantity());
         dto.setUnit(item.getUnit());

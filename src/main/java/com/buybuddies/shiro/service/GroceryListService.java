@@ -124,9 +124,9 @@ public class GroceryListService {
                 .map(User::getId)
                 .collect(Collectors.toSet()));
 
-        dto.setMemberNames(groceryList.getMembers().stream()
-                .map(User::getName)
-                .collect(Collectors.toSet()));
+//        dto.setMemberNames(groceryList.getMembers().stream()
+//                .map(User::getName)
+//                .collect(Collectors.toSet()));
 
         return dto;
     }

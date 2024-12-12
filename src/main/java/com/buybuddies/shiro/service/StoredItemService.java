@@ -29,7 +29,7 @@ public class StoredItemService {
         Depot depot = depotRepository.findById(dto.getDepotId())
                 .orElseThrow(() -> new RuntimeException("Depot not found"));
 
-        GroceryItem groceryItem = groceryItemRepository.findById(dto.getGroceryItemId())
+        GroceryItem groceryItem = groceryItemRepository.findByNameIgnoreCase(dto.getGroceryItemName())
                 .orElseGet(() -> {
                     GroceryItem newItem = new GroceryItem();
                     newItem.setName(dto.getGroceryItemName());
@@ -40,10 +40,10 @@ public class StoredItemService {
                 });
 
         List<StoredItem> existingItems = storedItemRepository
-                .findByDepotIdAndGroceryItemId(depot.getId(), groceryItem.getId());
+                .findByDepotIdAndGroceryItemNameIgnoreCase(depot.getId(), groceryItem.getName());
 
         if (!existingItems.isEmpty()) {
-            StoredItem existingItem = existingItems.get(0);
+            StoredItem existingItem = existingItems.getFirst();
             existingItem.setQuantity(existingItem.getQuantity() + dto.getQuantity());
             existingItem.setExpirationDate(dto.getExpirationDate());
             return convertToDTO(storedItemRepository.save(existingItem));
@@ -130,7 +130,7 @@ public class StoredItemService {
     private StoredItemDTO convertToDTO(StoredItem item) {
         StoredItemDTO dto = new StoredItemDTO();
         dto.setId(item.getId());
-        dto.setGroceryItemId(item.getGroceryItem().getId());
+//        dto.setGroceryItemId(item.getGroceryItem().getId());
         dto.setGroceryItemName(item.getGroceryItem().getName());
         dto.setDepotId(item.getDepot().getId());
         dto.setDepotName(item.getDepot().getName());
