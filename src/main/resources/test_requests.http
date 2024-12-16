@@ -3,13 +3,14 @@
 
 ### Variables
 @baseUrl = http://localhost:8080/api
-@usersUrl = {{baseUrl}}/users
-@homesUrl = {{baseUrl}}/homes
-@depotsUrl = {{baseUrl}}/depots
-@groceryItemsUrl = {{baseUrl}}/grocery-items
-@storedItemsUrl = {{baseUrl}}/stored-items
-@groceryListsUrl = {{baseUrl}}/grocery-lists
-@groceryListItemsUrl = {{baseUrl}}/grocery-list-items
+@httpUrl = http://192.168.0.108:8080/api
+@usersUrl = {{httpUrl}}/users
+@homesUrl = {{httpUrl}}/homes
+@depotsUrl = {{httpUrl}}/depots
+@groceryItemsUrl = {{httpUrl}}/grocery-items
+@storedItemsUrl = {{httpUrl}}/stored-items
+@groceryListsUrl = {{httpUrl}}/grocery-lists
+@groceryListItemsUrl = {{httpUrl}}/grocery-list-items
 
 ### User Tests ###
 
@@ -19,9 +20,12 @@ POST {{usersUrl}}
 Content-Type: application/json
 
 {
-  "email": "owner@example.com",
-  "name": "Home Owner"
+  "id": null,
+  "firebaseUid": "2XNT4L76VGQHkl6XmzRBefJiVkB3",
+  "email": "test@example.com",
+  "name": "Test User"
 }
+
 
 ###
 @ownerId = {{createOwner.response.body.id}}

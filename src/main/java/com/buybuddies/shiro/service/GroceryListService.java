@@ -7,13 +7,14 @@ import com.buybuddies.shiro.repository.GroceryListRepository;
 import com.buybuddies.shiro.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class GroceryListService {
@@ -22,8 +23,15 @@ public class GroceryListService {
 
 
     public GroceryListDTO createGroceryList(GroceryListDTO groceryListDTO) {
-        User owner = userRepository.findById(groceryListDTO.getOwnerId())
-                .orElseThrow(() -> new RuntimeException("Owner not found"));
+        log.info("Creating new grocery list. Name: '{}', Owner ID: '{}'",
+                groceryListDTO.getName(), groceryListDTO.getOwnerId());
+
+        User owner = userRepository.findByFirebaseUid(groceryListDTO.getOwnerId())
+                .orElseThrow(() -> {
+                    log.error("Failed to create grocery list. Owner not found with Firebase UID: {}",
+                            groceryListDTO.getOwnerId());
+                    return new RuntimeException("Owner not found");
+                });
 
         GroceryList groceryList = new GroceryList();
         groceryList.setName(groceryListDTO.getName());
@@ -31,6 +39,7 @@ public class GroceryListService {
         groceryList.setOwner(owner);
 
         if (groceryListDTO.getMemberIds() != null && !groceryListDTO.getMemberIds().isEmpty()) {
+            log.debug("Adding {} members to grocery list", groceryListDTO.getMemberIds().size());
             Set<User> members = userRepository.findAllById(groceryListDTO.getMemberIds())
                     .stream()
                     .collect(Collectors.toSet());
@@ -38,6 +47,8 @@ public class GroceryListService {
         }
 
         groceryList = groceryListRepository.save(groceryList);
+        log.info("Successfully created grocery list with ID: {}", groceryList.getId());
+
         return convertToDTO(groceryList);
     }
 
@@ -62,7 +73,7 @@ public class GroceryListService {
         groceryList.setDescription(dto.getDescription());
 
         if (dto.getOwnerId() != null && !dto.getOwnerId().equals(groceryList.getOwner().getId())) {
-            User newOwner = userRepository.findById(dto.getOwnerId())
+            User newOwner = userRepository.findByFirebaseUid(dto.getOwnerId())
                     .orElseThrow(() -> new RuntimeException("New owner not found"));
             groceryList.setOwner(newOwner);
         }
@@ -112,22 +123,54 @@ public class GroceryListService {
         groceryListRepository.deleteById(id);
     }
 
+    @Transactional
+    public void deleteGroceryListByNameAndOwnerId(String name, String firebaseUid) {
+        log.info("Attempting to delete grocery list. Name: '{}', Owner Firebase UID: '{}'",
+                name, firebaseUid);
+
+        // Find user by Firebase UID
+        User owner = userRepository.findByFirebaseUid(firebaseUid)
+                .orElseThrow(() -> {
+                    log.error("Failed to delete grocery list. Owner not found with Firebase UID: {}",
+                            firebaseUid);
+                    return new RuntimeException("User not found");
+                });
+
+        log.debug("Found owner in database. Internal ID: {}", owner.getId());
+
+        // Find and delete the list
+        GroceryList groceryList = groceryListRepository.findByNameAndOwner(name, owner)
+                .orElseThrow(() -> {
+                    log.error("Failed to delete grocery list. List not found with name '{}' and owner '{}'",
+                            name, firebaseUid);
+                    return new RuntimeException("Grocery list not found");
+                });
+
+        log.debug("Found grocery list to delete. ID: {}, Items count: {}, Members count: {}",
+                groceryList.getId(),
+                groceryList.getItems().size(),
+                groceryList.getMembers().size());
+
+        groceryListRepository.deleteByNameAndOwner(name, owner);
+        log.info("Successfully deleted grocery list. Name: '{}', Owner Firebase UID: '{}'",
+                name, firebaseUid);
+    }
+
     private GroceryListDTO convertToDTO(GroceryList groceryList) {
+        log.debug("Converting grocery list to DTO. List ID: {}", groceryList.getId());
+
         GroceryListDTO dto = new GroceryListDTO();
         dto.setId(groceryList.getId());
         dto.setName(groceryList.getName());
         dto.setDescription(groceryList.getDescription());
-        dto.setOwnerId(groceryList.getOwner().getId());
-        dto.setOwnerName(groceryList.getOwner().getName());
+        dto.setOwnerId(groceryList.getOwner().getFirebaseUid());  // Using Firebase UID
+        dto.setStatus(groceryList.getStatus());
 
         dto.setMemberIds(groceryList.getMembers().stream()
                 .map(User::getId)
                 .collect(Collectors.toSet()));
 
-//        dto.setMemberNames(groceryList.getMembers().stream()
-//                .map(User::getName)
-//                .collect(Collectors.toSet()));
-
+        log.debug("Converted grocery list to DTO. Members count: {}", dto.getMemberIds().size());
         return dto;
     }
 }

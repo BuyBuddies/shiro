@@ -24,6 +24,8 @@ public class GroceryList extends BaseEntity{
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
+    private String status;
+
     @ManyToMany
     @JoinTable(
             name = "grocery_list_members",

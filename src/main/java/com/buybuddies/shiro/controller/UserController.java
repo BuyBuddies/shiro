@@ -24,9 +24,10 @@ public class UserController {
         );
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> getUser(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.getUser(id));
+    @GetMapping("/firebase/{firebaseUid}")
+    public ResponseEntity<UserDTO> getUserByFirebaseUid(
+            @PathVariable String firebaseUid) {
+        return ResponseEntity.ok(userService.getUserByFirebaseUid(firebaseUid));
     }
 
     @GetMapping("/me")

@@ -53,9 +53,18 @@ public class GroceryListController {
         return ResponseEntity.ok(groceryListService.removeMember(listId, userId));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteGroceryList(@PathVariable Long id) {
-        groceryListService.deleteGroceryList(id);
+    @DeleteMapping
+    public ResponseEntity<Void> deleteGroceryList(@RequestBody GroceryListDTO groceryListDTO) {
+        groceryListService.deleteGroceryListByNameAndOwnerId(
+                groceryListDTO.getName(),
+                groceryListDTO.getOwnerId()
+        );
         return ResponseEntity.noContent().build();
     }
+
+//    @DeleteMapping("/{id}")
+//    public ResponseEntity<Void> deleteGroceryList(@PathVariable Long id) {
+//        groceryListService.deleteGroceryList(id);
+//        return ResponseEntity.noContent().build();
+//    }
 }
