@@ -2,16 +2,12 @@ package com.buybuddies.shiro.service;
 
 
 import com.buybuddies.shiro.dto.HomeDTO;
-import com.buybuddies.shiro.dto.UserDTO;
 import com.buybuddies.shiro.entity.Home;
 import com.buybuddies.shiro.entity.User;
-import com.buybuddies.shiro.exception.ResourceNotFoundException;
 import com.buybuddies.shiro.repository.HomeRepository;
 import com.buybuddies.shiro.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;

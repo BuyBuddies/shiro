@@ -3,7 +3,6 @@ package com.buybuddies.shiro.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,6 +32,10 @@ public class GroceryList extends BaseEntity{
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private Set<User> members = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "home_id")
+    private Home home;
 
     @OneToMany(mappedBy = "groceryList", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<GroceryListItem> items = new HashSet<>();

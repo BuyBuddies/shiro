@@ -2,19 +2,16 @@ package com.buybuddies.shiro.service;
 
 import com.buybuddies.shiro.dto.UserDTO;
 import com.buybuddies.shiro.entity.User;
-import com.buybuddies.shiro.exception.ResourceNotFoundException;
 import com.buybuddies.shiro.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
@@ -41,9 +38,12 @@ public class UserService {
     }
 
     public UserDTO getUserByFirebaseUid(String firebaseUid){
-        User user = userRepository.findByFirebaseUid(firebaseUid)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        return convertToDTO(user);
+        Optional<User> userOptional = userRepository.findByFirebaseUid(firebaseUid);
+        if (userOptional.isPresent()) {
+            return convertToDTO(userOptional.get());
+        } else {
+            return null;
+        }
     }
 
     public List<UserDTO> getAllUsers() {
@@ -53,8 +53,8 @@ public class UserService {
     }
 
     @Transactional
-    public UserDTO updateUser(Long id, UserDTO userDTO) {
-        User user = userRepository.findById(id)
+    public UserDTO updateUser(String firebaseUid, UserDTO userDTO) {
+        User user = userRepository.findByFirebaseUid(firebaseUid)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         if (!user.getEmail().equals(userDTO.getEmail()) &&
@@ -76,6 +76,15 @@ public class UserService {
         }
         userRepository.deleteById(id);
     }
+
+    @Transactional
+    public void deleteUserByFirebaseUid(String firebaseUid) {
+        if (!userRepository.existsByFirebaseUid(firebaseUid)) {
+            throw new RuntimeException("User not found");
+        }
+        userRepository.deleteByFirebaseUid(firebaseUid);
+    }
+
 
     private UserDTO convertToDTO(User user) {
         UserDTO dto = new UserDTO();

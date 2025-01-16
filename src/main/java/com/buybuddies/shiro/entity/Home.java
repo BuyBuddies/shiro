@@ -32,6 +32,9 @@ public class Home extends BaseEntity{
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> members = new HashSet<>();
 
+    @OneToMany(mappedBy = "home", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<GroceryList> groceryLists = new HashSet<>();
+
     @OneToMany(
             mappedBy = "home",
             cascade = CascadeType.ALL,
