@@ -1,5 +1,6 @@
 package com.buybuddies.shiro.service;
 
+import com.buybuddies.shiro.dto.GroceryListDTO;
 import com.buybuddies.shiro.dto.GroceryListItemDTO;
 import com.buybuddies.shiro.entity.GroceryItem;
 import com.buybuddies.shiro.entity.GroceryList;
@@ -44,7 +45,6 @@ public class GroceryListItemService {
         item.setGroceryItem(groceryItem);
         item.setQuantity(dto.getQuantity());
         item.setUnit(dto.getUnit() != null ? dto.getUnit() : groceryItem.getDefaultUnit());
-        item.setNotes(dto.getNotes());
         item.setStatus(dto.getStatus() != null ? dto.getStatus() : PurchaseStatus.PENDING);
 
         item = groceryListItemRepository.save(item);
@@ -59,6 +59,12 @@ public class GroceryListItemService {
 
     public List<GroceryListItemDTO> getItemsByList(Long listId) {
         return groceryListItemRepository.findByGroceryListId(listId).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<GroceryListItemDTO> getGroceryListItemsByUser(String userId) {
+        return groceryListItemRepository.findByOwnerIdOrMemberId(userId).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
@@ -82,10 +88,7 @@ public class GroceryListItemService {
 
         item.setQuantity(dto.getQuantity());
         item.setUnit(dto.getUnit());
-        item.setNotes(dto.getNotes());
-        if (dto.getStatus() != null) {
-            item.setStatus(dto.getStatus());
-        }
+        item.setStatus(dto.getStatus());
 
         item = groceryListItemRepository.save(item);
         return convertToDTO(item);
@@ -113,11 +116,9 @@ public class GroceryListItemService {
         GroceryListItemDTO dto = new GroceryListItemDTO();
         dto.setId(item.getId());
         dto.setGroceryListId(item.getGroceryList().getId());
-//        dto.setGroceryItemId(item.getGroceryItem().getId());
         dto.setGroceryItemName(item.getGroceryItem().getName());
         dto.setQuantity(item.getQuantity());
         dto.setUnit(item.getUnit());
-        dto.setNotes(item.getNotes());
         dto.setStatus(item.getStatus());
         return dto;
     }

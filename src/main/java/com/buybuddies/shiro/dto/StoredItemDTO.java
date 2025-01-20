@@ -7,7 +7,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class StoredItemDTO {
+public class StoredItemDTO extends BaseDTO {
     private Long id;
 //    private Long groceryItemId;
     private String groceryItemName;

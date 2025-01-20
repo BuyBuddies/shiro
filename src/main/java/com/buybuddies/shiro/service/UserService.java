@@ -85,6 +85,15 @@ public class UserService {
         userRepository.deleteByFirebaseUid(firebaseUid);
     }
 
+    public UserDTO getUserByEmail(String email) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isPresent()) {
+            return convertToDTO(userOptional.get());
+        } else {
+            return null;
+        }
+    }
+
 
     private UserDTO convertToDTO(User user) {
         UserDTO dto = new UserDTO();

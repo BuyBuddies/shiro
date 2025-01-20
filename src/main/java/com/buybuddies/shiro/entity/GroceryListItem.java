@@ -30,8 +30,6 @@ public class GroceryListItem extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private MeasurementUnit unit;
 
-    private String notes;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PurchaseStatus status = PurchaseStatus.PENDING;

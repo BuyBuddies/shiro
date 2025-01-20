@@ -5,7 +5,7 @@ import com.buybuddies.shiro.enums.MeasurementUnit;
 import lombok.Data;
 
 @Data
-public class GroceryItemDTO {
+public class GroceryItemDTO extends BaseDTO {
     Long id;
     String name;
     String description;

@@ -2,12 +2,16 @@ package com.buybuddies.shiro.service;
 
 import com.buybuddies.shiro.dto.GroceryListDTO;
 import com.buybuddies.shiro.entity.GroceryList;
+import com.buybuddies.shiro.entity.GroceryListItem;
 import com.buybuddies.shiro.entity.User;
+import com.buybuddies.shiro.exception.ResourceNotFoundException;
 import com.buybuddies.shiro.repository.GroceryListRepository;
 import com.buybuddies.shiro.repository.UserRepository;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,7 +23,7 @@ import java.util.stream.Collectors;
 public class GroceryListService {
     private final GroceryListRepository groceryListRepository;
     private final UserRepository userRepository;
-
+    private final EntityManager entityManager;
 
     public GroceryListDTO createGroceryList(GroceryListDTO groceryListDTO) {
         log.info("Creating new grocery list. Name: '{}', Owner Firebase UID: '{}'",
@@ -125,7 +129,14 @@ public class GroceryListService {
             throw new RuntimeException("Not authorized to delete this list");
         }
 
+        entityManager.createQuery("DELETE FROM GroceryListItem gli WHERE gli.groceryList.id = :listId")
+                .setParameter("listId", id)
+                .executeUpdate();
+
+        groceryList.getMembers().clear();
+
         groceryListRepository.delete(groceryList);
+
         log.info("Successfully deleted grocery list {}", id);
     }
 
@@ -145,5 +156,56 @@ public class GroceryListService {
 
         log.debug("Converted grocery list to DTO. Members count: {}", dto.getMemberIds().size());
         return dto;
+    }
+
+    public GroceryListDTO findByOwnerIdAndName(String ownerFirebaseUid, String name) {
+        GroceryList list = groceryListRepository.findByOwnerFirebaseUidAndName(ownerFirebaseUid, name)
+                .orElse(null);
+        return list != null ? convertToDTO(list) : null;
+    }
+
+    public List<String> getListMemberEmails(Long listId) {
+        GroceryList groceryList = groceryListRepository.findById(listId)
+                .orElseThrow(() -> new RuntimeException("Grocery list not found"));
+
+        return groceryList.getMembers().stream()
+                .map(User::getEmail)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public GroceryListDTO addMemberByEmail(Long listId, String memberEmail) {
+        GroceryList groceryList = groceryListRepository.findById(listId)
+                .orElseThrow(() -> new ResourceNotFoundException("List not found with id: " + listId));
+
+        User memberUser = userRepository.findByEmail(memberEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + memberEmail));
+
+        // Check if user is already a member
+        if (groceryList.getMembers().stream().anyMatch(member -> member.getId().equals(memberUser.getId()))) {
+            throw new DuplicateKeyException("User is already a member of this list");
+        }
+
+        groceryList.getMembers().add(memberUser);
+        GroceryList savedList = groceryListRepository.save(groceryList);
+
+        return convertToDTO(savedList);
+    }
+
+    @Transactional
+    public GroceryListDTO removeMemberByEmail(Long listId, String email) {
+        GroceryList groceryList = groceryListRepository.findById(listId)
+                .orElseThrow(() -> new ResourceNotFoundException("List not found with id: " + listId));
+
+        User memberToRemove = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+
+        // Remove the member
+        groceryList.getMembers().remove(memberToRemove);
+
+        // Save the updated list
+        GroceryList savedList = groceryListRepository.save(groceryList);
+
+        return convertToDTO(savedList);
     }
 }

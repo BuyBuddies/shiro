@@ -18,6 +18,29 @@ public class UserController {
     private final UserService userService;
     private final AuthenticationService authService;
 
+    @GetMapping()
+    public ResponseEntity<UserDTO> getUser(
+            HttpServletRequest request
+    ) {
+        String requestFirebaseUid = (String) request.getAttribute("firebaseUid");
+        log.info("Received get user request for Firebase UID: {}", requestFirebaseUid);
+
+        try {
+            UserDTO user = userService.getUserByFirebaseUid(requestFirebaseUid);
+            if (user == null) {
+                log.info("User not found for Firebase UID: {}", requestFirebaseUid);
+                return ResponseEntity.notFound().build();
+            }
+
+            log.info("Successfully retrieved user with Firebase UID: {}", requestFirebaseUid);
+            return ResponseEntity.ok(user);
+        } catch (Exception e) {
+            log.error("Error retrieving user", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
     @PostMapping("/create_update")
     public ResponseEntity<UserDTO> createOrUpdateUser(
             HttpServletRequest request,
@@ -36,6 +59,7 @@ public class UserController {
             UserDTO existingUser = userService.getUserByFirebaseUid(firebaseUid);
             if (existingUser != null) {
                 log.info("User found, with Firebase UID: {}", firebaseUid);
+                log.info("User found with email: {}", existingUser.getEmail());
                 return ResponseEntity.ok(existingUser);
             }
 

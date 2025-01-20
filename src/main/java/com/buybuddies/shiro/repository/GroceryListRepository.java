@@ -18,4 +18,5 @@ public interface GroceryListRepository extends JpaRepository<GroceryList, Long> 
 
     Optional<GroceryList> findByNameAndOwner(String name, User owner);
     void deleteByNameAndOwner(String name, User owner);
+    Optional<GroceryList> findByOwnerFirebaseUidAndName(String ownerFirebaseUid, String name);
 }
