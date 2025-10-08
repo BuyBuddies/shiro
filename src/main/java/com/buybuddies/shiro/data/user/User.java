@@ -1,18 +1,20 @@
-package com.buybuddies.shiro.entity;
+package com.buybuddies.shiro.data.user;
 
 
+import com.buybuddies.shiro.data.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
 @Table(name = "users")
 @Data
-public class User extends BaseEntity{
+@EqualsAndHashCode(callSuper = true)
+public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(nullable = false)
     private String firebaseUid;
 
     @Column(nullable = false)
@@ -20,5 +22,9 @@ public class User extends BaseEntity{
 
     @Column(nullable = false)
     private String name;
+
+    @Enumerated
+    @Column(nullable = false)
+    private Role role;
 }
 

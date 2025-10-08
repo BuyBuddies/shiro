@@ -1,4 +1,4 @@
-package com.buybuddies.shiro.config;
+package com.buybuddies.shiro.authorization.security;
 
 
 import com.google.auth.oauth2.GoogleCredentials;
@@ -29,8 +29,6 @@ public class FirebaseConfig {
         }
         return FirebaseApp.getInstance();
     }
-
-
 
     @Bean
     public FirebaseAuth firebaseAuth() throws IOException {
