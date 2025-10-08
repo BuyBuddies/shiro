@@ -1,4 +1,4 @@
-package com.buybuddies.shiro.security;
+package com.buybuddies.shiro.authorization.security;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +9,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -24,7 +23,11 @@ public class SecurityConfig {
                 .addFilterBefore(firebaseAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/h2-console/**", "/error").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
+
+                        //Protected Endpoint, only for authenticated users
                         .requestMatchers("/api/**").authenticated()
+
                         .anyRequest().permitAll()
                 )
                 .sessionManagement(session ->
@@ -33,7 +36,11 @@ public class SecurityConfig {
                 .exceptionHandling(exception ->
                         exception.authenticationEntryPoint((request, response, authException) -> {
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                            response.getWriter().write("Unauthorized: " + authException.getMessage());
+                            response.setContentType("application/json");
+                            response.getWriter().write(
+                                    String.format("{\"error\": \"Unauthorized\", \"message\": \"%s\"}",
+                                            authException.getMessage())
+                            );
                         })
                 );
 
