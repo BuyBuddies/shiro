@@ -1,0 +1,39 @@
+package com.buybuddies.shiro.data.depot_item;
+
+import com.buybuddies.shiro.data.BaseEntity;
+import com.buybuddies.shiro.data.depot.Depot;
+import com.buybuddies.shiro.data.enums.MeasurementUnit;
+import com.buybuddies.shiro.data.grocery_item.GroceryItem;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "stored_items")
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class StoredItem extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "grocery_item_id", nullable = false)
+    private GroceryItem groceryItem;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "depot_id", nullable = false)
+    private Depot depot;
+
+    @Column(nullable = false)
+    private Double quantity;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private MeasurementUnit unit;
+
+    private LocalDateTime expirationDate;
+
+
+}
