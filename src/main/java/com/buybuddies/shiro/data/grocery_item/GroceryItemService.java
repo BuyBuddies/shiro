@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class GroceryItemService {
     private final GroceryItemRepository groceryItemRepository;
+    private final GroceryItemMapper groceryItemMapper;
 
     public GroceryItemDTO createGroceryItem(GroceryItemDTO groceryItemDTO) {
         if (groceryItemDTO.getBarcode() != null &&
@@ -19,12 +20,8 @@ public class GroceryItemService {
             throw new RuntimeException("Item with this barcode already exists");
         }
 
-        GroceryItem item = new GroceryItem();
-        item.setName(groceryItemDTO.getName());
-        item.setDescription(groceryItemDTO.getDescription());
-        item.setBarcode(groceryItemDTO.getBarcode());
-        item.setCategory(groceryItemDTO.getCategory());
-        item.setDefaultUnit(groceryItemDTO.getUnit());
+
+        GroceryItem item = groceryItemMapper.toEntity(groceryItemDTO);
 
         item = groceryItemRepository.save(item);
         return convertToDTO(item);
@@ -74,7 +71,7 @@ public class GroceryItemService {
         item.setDescription(dto.getDescription());
         item.setBarcode(dto.getBarcode());
         item.setCategory(dto.getCategory());
-        item.setDefaultUnit(dto.getUnit());
+        item.setUnit(dto.getUnit());
 
         item = groceryItemRepository.save(item);
         return convertToDTO(item);
@@ -90,12 +87,12 @@ public class GroceryItemService {
 
     private GroceryItemDTO convertToDTO(GroceryItem item) {
         GroceryItemDTO dto = new GroceryItemDTO();
-        dto.setId(item.getId());
+//        dto.setId(item.getId());
         dto.setName(item.getName());
         dto.setDescription(item.getDescription());
         dto.setBarcode(item.getBarcode());
         dto.setCategory(item.getCategory());
-        dto.setUnit(item.getDefaultUnit());
+        dto.setUnit(item.getUnit());
         return dto;
     }
 }

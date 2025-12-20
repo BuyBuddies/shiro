@@ -32,7 +32,7 @@ public class StoredItemService {
                     GroceryItem newItem = new GroceryItem();
                     newItem.setName(dto.getGroceryItemName());
                     newItem.setCategory(ItemCategory.OTHER);
-                    newItem.setDefaultUnit(dto.getUnitEnum() != null ?
+                    newItem.setUnit(dto.getUnitEnum() != null ?
                             dto.getUnitEnum() : MeasurementUnit.PIECE);
                     return groceryItemRepository.save(newItem);
                 });
@@ -53,7 +53,7 @@ public class StoredItemService {
         storedItem.setDepot(depot);
         storedItem.setQuantity(dto.getQuantity());
         storedItem.setUnit(dto.getUnitEnum() != null ?
-                dto.getUnitEnum() : groceryItem.getDefaultUnit());
+                dto.getUnitEnum() : groceryItem.getUnit());
         storedItem.setExpirationDate(dto.getExpirationDate());
 
         storedItem = storedItemRepository.save(storedItem);
