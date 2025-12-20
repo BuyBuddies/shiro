@@ -1,6 +1,7 @@
 package com.buybuddies.shiro.data.grocery_list;
 
 import com.buybuddies.shiro.data.BaseDTO;
+import com.buybuddies.shiro.data.enums.GroceryListStatus;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -15,6 +16,6 @@ public class GroceryListDTO extends BaseDTO {
     private String description;
     private String ownerId;
     private Long homeId;
-    private String status;
+    private GroceryListStatus status;
     private Set<String> memberIds = new HashSet<>();
 }

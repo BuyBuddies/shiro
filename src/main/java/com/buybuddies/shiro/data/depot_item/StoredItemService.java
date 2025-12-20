@@ -26,13 +26,13 @@ public class StoredItemService {
         Depot depot = depotRepository.findById(dto.getDepotId())
                 .orElseThrow(() -> new RuntimeException("Depot not found"));
 
-        //get from Database the GroceryItem else create a new one and add save it to the database
+        //Get from Database GroceryItem else create new and save to the database
         GroceryItem groceryItem = groceryItemRepository.findByNameIgnoreCase(dto.getGroceryItemName())
                 .orElseGet(() -> {
                     GroceryItem newItem = new GroceryItem();
                     newItem.setName(dto.getGroceryItemName());
                     newItem.setCategory(ItemCategory.OTHER);
-                    newItem.setDefaultUnit(dto.getUnitEnum() != null ?
+                    newItem.setUnit(dto.getUnitEnum() != null ?
                             dto.getUnitEnum() : MeasurementUnit.PIECE);
                     return groceryItemRepository.save(newItem);
                 });
@@ -53,7 +53,7 @@ public class StoredItemService {
         storedItem.setDepot(depot);
         storedItem.setQuantity(dto.getQuantity());
         storedItem.setUnit(dto.getUnitEnum() != null ?
-                dto.getUnitEnum() : groceryItem.getDefaultUnit());
+                dto.getUnitEnum() : groceryItem.getUnit());
         storedItem.setExpirationDate(dto.getExpirationDate());
 
         storedItem = storedItemRepository.save(storedItem);

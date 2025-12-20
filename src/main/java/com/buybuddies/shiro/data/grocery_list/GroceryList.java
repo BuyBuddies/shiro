@@ -1,5 +1,6 @@
 package com.buybuddies.shiro.data.grocery_list;
 
+import com.buybuddies.shiro.data.enums.GroceryListStatus;
 import com.buybuddies.shiro.data.user.User;
 import com.buybuddies.shiro.data.BaseEntity;
 import com.buybuddies.shiro.data.grocery_list_item.GroceryListItem;
@@ -28,7 +29,7 @@ public class GroceryList extends BaseEntity {
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
-    private String status;
+    private GroceryListStatus status;
 
     @ManyToMany
     @JoinTable(

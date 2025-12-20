@@ -2,7 +2,6 @@ package com.buybuddies.shiro.data.grocery_list_item;
 
 import com.buybuddies.shiro.data.grocery_list.GroceryListDTO;
 import com.buybuddies.shiro.data.enums.PurchaseStatus;
-import com.buybuddies.shiro.data.grocery_item.GroceryListItemService;
 import com.buybuddies.shiro.data.grocery_list.GroceryListService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;

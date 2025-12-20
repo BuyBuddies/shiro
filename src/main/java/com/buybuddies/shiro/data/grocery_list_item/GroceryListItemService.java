@@ -1,12 +1,11 @@
-package com.buybuddies.shiro.data.grocery_item;
+package com.buybuddies.shiro.data.grocery_list_item;
 
-import com.buybuddies.shiro.data.grocery_list_item.GroceryListItemDTO;
+import com.buybuddies.shiro.data.grocery_item.GroceryItem;
+import com.buybuddies.shiro.data.grocery_item.GroceryItemRepository;
 import com.buybuddies.shiro.data.grocery_list.GroceryList;
-import com.buybuddies.shiro.data.grocery_list_item.GroceryListItem;
 import com.buybuddies.shiro.data.enums.ItemCategory;
 import com.buybuddies.shiro.data.enums.MeasurementUnit;
 import com.buybuddies.shiro.data.enums.PurchaseStatus;
-import com.buybuddies.shiro.data.grocery_list_item.GroceryListItemRepository;
 import com.buybuddies.shiro.data.grocery_list.GroceryListRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +32,7 @@ public class GroceryListItemService {
                     GroceryItem newItem = new GroceryItem();
                     newItem.setName(dto.getGroceryItemName());
                     newItem.setCategory(ItemCategory.OTHER);
-                    newItem.setDefaultUnit(dto.getUnit() != null ? dto.getUnit() : MeasurementUnit.PIECE);
+                    newItem.setUnit(dto.getUnit() != null ? dto.getUnit() : MeasurementUnit.PIECE);
                     return groceryItemRepository.save(newItem);
                 });
 
@@ -41,7 +40,7 @@ public class GroceryListItemService {
         item.setGroceryList(groceryList);
         item.setGroceryItem(groceryItem);
         item.setQuantity(dto.getQuantity());
-        item.setUnit(dto.getUnit() != null ? dto.getUnit() : groceryItem.getDefaultUnit());
+        item.setUnit(dto.getUnit() != null ? dto.getUnit() : groceryItem.getUnit());
         item.setStatus(dto.getStatus() != null ? dto.getStatus() : PurchaseStatus.PENDING);
 
         item = groceryListItemRepository.save(item);

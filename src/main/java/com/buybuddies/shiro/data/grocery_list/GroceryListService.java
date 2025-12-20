@@ -1,5 +1,6 @@
 package com.buybuddies.shiro.data.grocery_list;
 
+import com.buybuddies.shiro.data.enums.GroceryListStatus;
 import com.buybuddies.shiro.data.user.User;
 import com.buybuddies.shiro.exception.ResourceNotFoundException;
 import com.buybuddies.shiro.data.user.UserRepository;
@@ -32,7 +33,7 @@ public class GroceryListService {
         groceryList.setName(groceryListDTO.getName());
         groceryList.setDescription(groceryListDTO.getDescription());
         groceryList.setOwner(owner);
-        groceryList.setStatus("ACTIVE");
+        groceryList.setStatus(GroceryListStatus.ACTIVE);
 
         groceryList = groceryListRepository.save(groceryList);
         log.info("Successfully created grocery list with ID: {}", groceryList.getId());
