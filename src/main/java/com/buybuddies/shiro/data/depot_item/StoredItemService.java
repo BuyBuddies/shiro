@@ -26,7 +26,7 @@ public class StoredItemService {
         Depot depot = depotRepository.findById(dto.getDepotId())
                 .orElseThrow(() -> new RuntimeException("Depot not found"));
 
-        //get from Database the GroceryItem else create a new one and add save it to the database
+        //Get from Database GroceryItem else create new and save to the database
         GroceryItem groceryItem = groceryItemRepository.findByNameIgnoreCase(dto.getGroceryItemName())
                 .orElseGet(() -> {
                     GroceryItem newItem = new GroceryItem();
